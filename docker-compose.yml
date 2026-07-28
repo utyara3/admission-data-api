@@ -1,0 +1,13 @@
+services:
+  api:
+    build: .
+    container_name: admission-data-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src:ro
+      - ./pyproject.toml:/app/pyproject.toml:ro
+      - ./test1.py:/app/test1.py:ro
+    restart: unless-stopped
+
+    

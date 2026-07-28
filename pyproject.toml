@@ -1,0 +1,4 @@
+[tool.pyright]
+extraPaths = ["./src"]
+typeCheckingMode = "basic"
+pythonVersion = "3.14"
