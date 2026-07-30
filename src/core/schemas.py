@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from typing import Literal
+
 
 class UniversitySchema(BaseModel):
     id: str = Field(..., description="Уникальный ID вуза (e.g. spbpu)")
@@ -13,14 +15,15 @@ class UniversitySchema(BaseModel):
 
 class DirectionSchema(BaseModel):
     code: str = Field(..., description="Код направления (e.g. 09.03.04)")
-    name: str = Field(
-        ..., description="Название направления (e.g. Программная инженерия)"
+    profile: str | None = Field(
+        None, description="Профиль направления / Специализация (e.g. ИИ)"
     )
-    profile: str = Field(
-        ..., description="Профиль направления / Специализация (e.g. ИИ)"
+    education_form: Literal["full_time", "part_time", "distance"] = Field(
+        ..., description="Форма обучения (e.g. Очная)"
     )
-    education_form: str = Field(..., description="Форма обучения (e.g. Очная)")
-    funding_type: str = Field(..., description="Тип финансирования (e.g. Бюджет)")
+    funding_type: Literal[
+        "budget", "paid", "commercial", "special_quota", "separate_quota", "target"
+    ] = Field(..., description="Тип финансирования (e.g. Бюджет)")
 
 
 class ApplicantSchema(BaseModel):
@@ -49,6 +52,18 @@ class ApplicantSchema(BaseModel):
     status: str = Field(
         ..., description="Текущий статус абитуриента (e.g. Участвует в конкурсе)"
     )
+
+
+class ContestQueryParams(BaseModel):
+    university: str = Field(..., description="ID вуза")
+    code: str = Field(..., description="Код направления")
+    profile: str | None = Field(None, description="Профиль направления / Специализация")
+    education_form: Literal["full_time", "part_time", "distance"] = Field(
+        ..., description="Форма обучения"
+    )
+    funding_type: Literal[
+        "budget", "paid", "commercial", "special_quota", "separate_quota", "target"
+    ] = Field(..., description="Тип финансирования")
 
 
 class ContestListResponse(BaseModel):
