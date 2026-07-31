@@ -11,7 +11,7 @@ class BaseScraper(ABC):
     @abstractmethod
     async def scrape(
         self,
-        eductaion_grade: str,
+        education_grade: str,
         direction_code: str,
         education_form: str,
         funding_type: str,
