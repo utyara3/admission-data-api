@@ -1,10 +1,12 @@
-import os
 import importlib
 
 from typing import Type
 from pathlib import Path
 
+from src.core.logger_config import setup_logger
 from .base_scraper import BaseScraper
+
+logger = setup_logger(__name__)
 
 
 class ScraperRegistry:
@@ -34,10 +36,10 @@ class ScraperRegistry:
             config_file = item / "config.py"
 
             if not main_file.exists():
-                print(f"Папка {university_id} пропускается: нет main.py")
+                logger.warning(f"Папка {university_id} пропускается: нет main.py")
                 continue
             if not config_file.exists():
-                print(f"Папка {university_id} пропускается: нет config.py")
+                logger.warning(f"Папка {university_id} пропускается: нет config.py")
                 continue
 
             try:
@@ -67,12 +69,12 @@ class ScraperRegistry:
                 self._scrapers[university_id] = scraper_class
                 self._configs[university_id] = config
 
-                print(
+                logger.info(
                     f"Загружен скрапер: {university_id} ({config.university_short_name})"
                 )
 
             except Exception as e:
-                print(f"Ошибка загрузки скрапера {university_id}: {str(e)[:500]}")
+                logger.error(f"Ошибка загрузки скрапера: {university_id}", exc_info=e)
 
     def get_scraper(self, university_id: str) -> BaseScraper:
         """Получает экземпляр скрапера вуза"""

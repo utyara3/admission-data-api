@@ -7,7 +7,10 @@ from src.core.schemas import (
     ContestListResponse,
 )
 from src.scrapers.base_scraper import BaseScraper
+from src.core.logger_config import setup_logger
 from .config import config
+
+logger = setup_logger(__name__)
 
 
 class SPBSTUScraper(BaseScraper):
@@ -22,7 +25,6 @@ class SPBSTUScraper(BaseScraper):
         "separate_quota": "5",
         "target": "6",
     }
-
 
     async def scrape(
         self,
@@ -49,7 +51,7 @@ class SPBSTUScraper(BaseScraper):
             page = await context.new_page()
 
             try:
-                print("Загружаем страницу политеха")
+                logger.info("Загружаем страницу политеха")
                 await page.goto(
                     f"https://my.spbstu.ru/home/abit/list-applicants/{education_grade}",
                     timeout=30000,
@@ -59,19 +61,19 @@ class SPBSTUScraper(BaseScraper):
                 selects = page.locator("select")
 
                 # Фильтр формы обучения
-                print(f"Форма обучения {education_form}")
+                logger.debug(f"Форма обучения {education_form}")
                 await selects.nth(0).select_option(
                     self.SELECTOR_EDUCATION_FORMS_IDS[education_form]
                 )
 
                 # Фильтр типа финансирования
-                print(f"Тип финансирования {funding_type}")
+                logger.debug(f"Тип финансирования {funding_type}")
                 await selects.nth(1).select_option(
                     self.SELECTOR_FUNDING_TYPE_IDS[funding_type]
                 )
 
                 # Фильтр направления, элементы которого появляются после get api
-                print(f"Направление {direction_code}")
+                logger.debug(f"Направление {direction_code}")
                 direction_selector = selects.nth(2)
                 await page.wait_for_function(
                     "el => el.options.length > 1",
@@ -130,7 +132,7 @@ class SPBSTUScraper(BaseScraper):
                 return ret_data
 
             except Exception as e:
-                print(f"Ошибка при парсинге: {str(e)[:500]}")
+                logger.error(f"Ошибка при парсинге: {str(e)}")
                 raise
 
             finally:

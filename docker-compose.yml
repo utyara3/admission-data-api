@@ -4,10 +4,14 @@ services:
     container_name: admission-data-api
     ports:
       - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_TO_FILE=true
+      - LOG_DIR=/app/logs
     volumes:
       - ./src:/app/src:ro
+      - ./logs:/app/logs
       - ./pyproject.toml:/app/pyproject.toml:ro
-      - ./test1.py:/app/test1.py:ro
     restart: unless-stopped
 
     

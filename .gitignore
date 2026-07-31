@@ -3,3 +3,4 @@
 docker_error.log
 __pycache__/
 *.pyc
+logs/

@@ -31,7 +31,7 @@ class BaseScraper(ABC):
         """
         pass
 
-    @abstractmethod
-    async def get_available_directions(self) -> list[dict]:
-        """Получить список доступных направлений для вуза"""
-        pass
+    # @abstractmethod
+    # async def get_available_directions(self) -> list[dict]:
+    #     """Получить список доступных направлений для вуза"""
+    #     pass
