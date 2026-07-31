@@ -10,7 +10,12 @@ class BaseScraper(ABC):
 
     @abstractmethod
     async def scrape(
-        self, direction_code: str, education_form: str, funding_type: str, **kwargs: Any
+        self,
+        eductaion_grade: str,
+        direction_code: str,
+        education_form: str,
+        funding_type: str,
+        **kwargs: Any,
     ) -> ContestListResponse:
         """
         Основной метод парсинга.

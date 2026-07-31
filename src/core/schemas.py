@@ -56,6 +56,9 @@ class ApplicantSchema(BaseModel):
 
 class ContestQueryParams(BaseModel):
     university: str = Field(..., description="ID вуза")
+    education_degree: Literal["bachelor", "specialist", "master", "postgraduate"] = (
+        Field(..., description="Уровень обучения")
+    )
     code: str = Field(..., description="Код направления")
     profile: str | None = Field(None, description="Профиль направления / Специализация")
     education_form: Literal["full_time", "part_time", "distance"] = Field(

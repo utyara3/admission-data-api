@@ -1,4 +1,4 @@
-from src.scrapers.scraper_config import ScraperConfig
+from src.scrapers.base_config import ScraperConfig
 
 config = ScraperConfig(
     university_id="spbstu",

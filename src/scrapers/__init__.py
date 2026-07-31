@@ -4,7 +4,7 @@ import importlib
 from typing import Type
 from pathlib import Path
 
-from .base import BaseScraper
+from .base_scraper import BaseScraper
 
 
 class ScraperRegistry:

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.scrapers import registry
-from src.core.schemas import ContestQueryParams
+from src.core.schemas import ContestListResponse, ContestQueryParams
 
 router = APIRouter()
 
@@ -13,24 +13,26 @@ async def get_available_universities() -> list[dict]:
 
 @router.get(
     "/contest-lists",
-    # response_model=ContestListResponse,
+    response_model=ContestListResponse,
     tags=["Contest Lists"],
 )
 async def get_contest_lists(
     query_data: ContestQueryParams = Depends(),
-):  # -> ContestListResponse:
+) -> ContestListResponse:
     try:
         scraper = registry.get_scraper(query_data.university)
         res = await scraper.scrape(
-            query_data.code, query_data.education_form, query_data.funding_type
+            query_data.education_degree,
+            query_data.code,
+            query_data.profile,
+            query_data.education_form,
+            query_data.funding_type,
         )
         return res
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)[:500]
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Ошибка парсинга: {str(e)[:500]}",
+            detail=f"Ошибка парсинга: {str(e)}",
         )

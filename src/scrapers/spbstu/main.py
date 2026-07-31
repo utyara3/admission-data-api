@@ -6,12 +6,12 @@ from src.core.schemas import (
     DirectionSchema,
     ContestListResponse,
 )
-from src.scrapers.base import BaseScraper
+from src.scrapers.base_scraper import BaseScraper
 from .config import config
 
 
 class SPBSTUScraper(BaseScraper):
-    university_id = "spbstu"
+    university_id = config.university_id
 
     SELECTOR_EDUCATION_FORMS_IDS = {"distance": "1", "full_time": "2", "part_time": "3"}
     SELECTOR_FUNDING_TYPE_IDS = {
@@ -24,11 +24,20 @@ class SPBSTUScraper(BaseScraper):
     }
 
     async def scrape(
-        self, direction_code: str, education_form: str, funding_type: str, **kwargs
+        self,
+        education_grade: str,
+        direction_code: str,
+        profile: str | None,
+        education_form: str,
+        funding_type: str,
+        **kwargs,
     ) -> ContestListResponse:
         direction_code = direction_code.lower()
         education_form = education_form.lower()
         funding_type = funding_type.lower()
+
+        if education_grade == "specialist":
+            education_grade = "bachelor"
 
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
@@ -41,7 +50,7 @@ class SPBSTUScraper(BaseScraper):
             try:
                 print("Загружаем страницу политеха")
                 await page.goto(
-                    "https://my.spbstu.ru/home/abit/list-applicants/bachelor",
+                    f"https://my.spbstu.ru/home/abit/list-applicants/{education_grade}",
                     timeout=30000,
                 )
                 await page.wait_for_load_state("networkidle")
@@ -72,16 +81,47 @@ class SPBSTUScraper(BaseScraper):
                     lambda res: "get-abit-list" in res.url and res.status == 200,
                     timeout=15000,
                 ) as response_info:
-                    target_option = direction_selector.locator(
-                        "option", has_text=direction_code
-                    )
+                    all_options = await direction_selector.locator("option").all()
+
+                    matching_options = []
+                    for option in all_options:
+                        text = await option.inner_text()
+                        if direction_code in text:
+                            matching_options.append(option)
+
+                    if profile and matching_options:
+                        profile_lower = profile.lower()
+                        filtered_options = [
+                            option
+                            for option in matching_options
+                            if profile_lower in (await option.inner_text()).lower()
+                        ]
+                        if filtered_options:
+                            matching_options = filtered_options
+
+                    if not matching_options:
+                        raise ValueError(
+                            f"Не найдено направление {direction_code}"
+                            + (f"с профилем '{profile}'" if profile else "")
+                        )
+
+                    if len(matching_options) > 1:
+                        texts = [
+                            await option.inner_text() for option in matching_options
+                        ]
+                        raise ValueError(
+                            "Найдено несколько направлений с теми же названиями:\n"
+                            + "\n".join(texts)
+                        )
+
+                    target_option = matching_options[0]
                     option_value = await target_option.get_attribute("value")
+
                     await direction_selector.select_option(value=option_value)
 
                 response = await response_info.value
                 raw_json = await response.json()
 
-                print("Данные успешно перехвачены из API")
                 ret_data = self._validate_raw_json(
                     raw_json, direction_code, education_form, funding_type
                 )
@@ -100,12 +140,12 @@ class SPBSTUScraper(BaseScraper):
         self, raw_json: dict, code: str, education_form: str, funding_type: str
     ) -> ContestListResponse:
         applicants = []
+        results = raw_json.get("results")
 
-        contest_list = raw_json.get("results")
-        if contest_list is None:
+        if results is None:
             raise ValueError(f"Result of parsing {self.university_id} is None")
 
-        for raw_applicant in contest_list:
+        for raw_applicant in results:
             keys = list(raw_applicant.keys())
             start_idx = keys.index("sum_vs")
             end_idx = keys.index("counl_ind")
@@ -114,6 +154,7 @@ class SPBSTUScraper(BaseScraper):
                 k: raw_applicant[k] or 0 for k in keys[start_idx + 1 : end_idx]
             }
 
+            # Считаем баллы
             if raw_applicant["sum"] is None:
                 total_score = 0
                 ia_score = 0
