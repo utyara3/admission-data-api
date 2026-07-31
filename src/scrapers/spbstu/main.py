@@ -23,6 +23,7 @@ class SPBSTUScraper(BaseScraper):
         "target": "6",
     }
 
+
     async def scrape(
         self,
         education_grade: str,
@@ -123,7 +124,7 @@ class SPBSTUScraper(BaseScraper):
                 raw_json = await response.json()
 
                 ret_data = self._validate_raw_json(
-                    raw_json, direction_code, education_form, funding_type
+                    raw_json, direction_code, profile, education_form, funding_type
                 )
 
                 return ret_data
@@ -137,7 +138,12 @@ class SPBSTUScraper(BaseScraper):
                 await browser.close()
 
     def _validate_raw_json(
-        self, raw_json: dict, code: str, education_form: str, funding_type: str
+        self,
+        raw_json: dict,
+        code: str,
+        profile: str | None,
+        education_form: str,
+        funding_type: str,
     ) -> ContestListResponse:
         applicants = []
         results = raw_json.get("results")
@@ -186,12 +192,9 @@ class SPBSTUScraper(BaseScraper):
             ),
             direction=DirectionSchema(
                 code=code,
-                profile=None,
+                profile=profile,
                 education_form=education_form,
                 funding_type=funding_type,
             ),
             applicant=applicants,
         )
-
-    async def get_available_directions(self) -> list[dict]:
-        return [{}]
