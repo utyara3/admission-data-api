@@ -40,6 +40,14 @@ def setup_logger(name: str):
 
             root_logger.info(f"Логирование в файл активировано: {log_dir}/app.log")
 
+        uvicorn_loggers = ("uvicorn", "uvicorn.error", "uvicorn.access")
+        for logger in uvicorn_loggers:
+            uvicorn_logger = logging.getLogger(logger)
+            uvicorn_logger.handlers = []
+            uvicorn_logger.propagate = True
+
+        logging.getLogger("uvicorn.access").setLevel(logging.INFO)
+
         _is_configured = True
 
     return logging.getLogger(name)
