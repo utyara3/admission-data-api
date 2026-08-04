@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.scrapers import registry
-from src.core.schemas import ContestListResponse, ContestQueryParams
+from src.schemas.contest import ContestListResponse, ContestQueryParams
 
 router = APIRouter()
 
@@ -22,11 +22,11 @@ async def get_contest_lists(
     try:
         scraper = registry.get_scraper(query_data.university)
         res = await scraper.scrape(
-            query_data.education_degree,
-            query_data.code,
-            query_data.profile,
-            query_data.education_form,
-            query_data.funding_type,
+            education_degree=query_data.education_degree,
+            direction_code=query_data.code,
+            education_form=query_data.education_form,
+            profile=query_data.profile,
+            funding_type=query_data.funding_type,
         )
         return res
     except ValueError as e:
