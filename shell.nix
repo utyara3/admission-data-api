@@ -14,6 +14,8 @@ let
       playwright
       pydantic
       pydantic-settings
+      sqlalchemy
+      asyncpg
     ]
   );
 in
