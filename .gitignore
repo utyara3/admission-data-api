@@ -1,5 +1,6 @@
 .direnv/
 .envrc
+.env
 docker_error.log
 __pycache__/
 *.pyc
