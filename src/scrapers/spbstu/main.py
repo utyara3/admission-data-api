@@ -1,6 +1,6 @@
 from playwright.async_api import async_playwright
 
-from src.core.schemas import (
+from src.schemas import (
     ApplicantSchema,
     UniversitySchema,
     DirectionSchema,
@@ -28,7 +28,7 @@ class SPBSTUScraper(BaseScraper):
 
     async def scrape(
         self,
-        education_grade: str,
+        education_degree: str,
         direction_code: str,
         profile: str | None,
         education_form: str,
@@ -39,8 +39,8 @@ class SPBSTUScraper(BaseScraper):
         education_form = education_form.lower()
         funding_type = funding_type.lower()
 
-        if education_grade == "specialist":
-            education_grade = "bachelor"
+        if education_degree == "specialist":
+            education_degree = "bachelor"
 
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
@@ -53,7 +53,7 @@ class SPBSTUScraper(BaseScraper):
             try:
                 logger.info("Загружаем страницу политеха")
                 await page.goto(
-                    f"https://my.spbstu.ru/home/abit/list-applicants/{education_grade}",
+                    f"https://my.spbstu.ru/home/abit/list-applicants/{education_degree}",
                     timeout=30000,
                 )
                 await page.wait_for_load_state("networkidle")
@@ -195,8 +195,8 @@ class SPBSTUScraper(BaseScraper):
             direction=DirectionSchema(
                 code=code,
                 profile=profile,
-                education_form=education_form,
-                funding_type=funding_type,
+                education_form=education_form,  # pyright: ignore
+                funding_type=funding_type,  # pyright: ignore
             ),
             applicant=applicants,
         )
