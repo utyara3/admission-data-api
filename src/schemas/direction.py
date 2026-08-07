@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from typing import Literal
+from src.core.enums import EducationForm, FundingType
 
 
 class DirectionSchema(BaseModel):
@@ -8,9 +8,9 @@ class DirectionSchema(BaseModel):
     profile: str | None = Field(
         None, description="Профиль направления / Специализация (e.g. ИИ)"
     )
-    education_form: Literal["full_time", "part_time", "distance"] = Field(
+    education_form: EducationForm = Field(
         ..., description="Форма обучения (e.g. Очная)"
     )
-    funding_type: Literal[
-        "budget", "paid", "commercial", "special_quota", "separate_quota", "target"
-    ] = Field(..., description="Тип финансирования (e.g. Бюджет)")
+    funding_type: FundingType = Field(
+        ..., description="Тип финансирования (e.g. Бюджет)"
+    )

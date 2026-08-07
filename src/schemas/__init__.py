@@ -1,4 +1,4 @@
-from .uviversity import UniversitySchema
+from .university import UniversitySchema
 from .applicant import ApplicantSchema
 from .direction import DirectionSchema
 from .contest import ContestListResponse, ContestQueryParams
