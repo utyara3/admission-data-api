@@ -1,5 +1,5 @@
-{
-  pkgs ? import <nixpkgs> { },
+{ pkgs ? import <nixpkgs> { }
+,
 }:
 
 let
@@ -16,6 +16,7 @@ let
       pydantic-settings
       sqlalchemy
       asyncpg
+      alembic
     ]
   );
 in
