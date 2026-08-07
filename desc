@@ -17,7 +17,7 @@ university_id, specialization, profile, education_form, funding_type
 Сущности:
 
 Вуз
-- Айди (spbpu)
+- Айди (spbstu)
 - Полное название (Санкт ... Политехнический Университет)
 - Короткое название (СПБПУ)
 
@@ -40,6 +40,43 @@ university_id, specialization, profile, education_form, funding_type
 - Баллы за индивидуальные достижения (10)
 - Баллы за экзамены ({рус: 91, мат: 86, инф: 90})
 - Статус (Участвует в конкурсе)
+
+
+Модели проекта:
+
+Uviversity
+- id INTEGER PRIMARY KEY (e.g. 1)
+- full_name TEXT UNIQUE (e.g. Санкт ... Политехнический Университет)
+- short_name TEXT UNIQUE (e.g. СПбПУ)
+- university_id TEXT UNIQUE (e.g. spbstu)
+
+Direction
+- id INTEGER PRIMARY KEY (e.g. 1)
+- university_id INTEGER FK -> Uviversity.id (e.g. 1)
+- education_degree TEXT (e.g. Бакалавриат)
+- code TEXT (e.g. 09.03.04)
+- name TEXT (e.g. Программная инженерия)
+- profile TEXT (e.g. ИИ)
+- education_form TEXT ENUM (e.g. full_time)
+- funding_type TEXT ENUM (e.g. budget)
+- updated_at DATETIME (e.g. 2026-06-25T00:00:00)
+
+Applicant
+- id INTEGER PRIMARY KEY (e.g. 1)
+- applicant_id TEXT UNIQUE (e.g. 1730447)
+- sum_of_scores INTEGER (e.g. 277)
+- score_for_individual_achievements INTEGER (e.g. 10)
+- score_for_exams JSONB (e.g. {"rus": 91, "math": 86, "inf": 90})
+
+Applications
+- applicant_db_id INTEGER FK -> Applicant.id (e.g. 1)
+- direction_id INTEGER FK -> Direction.id (e.g. 1)
+- position INTEGER (e.g. 228)
+- priority INTEGER (e.g. 1)
+- has_original BOOLEAN (e.g. False)
+- is_bvi BOOLEAN (e.g. False)
+- status TEXT ENUM (e.g. Участвует в конкурсе)
+
 
 Структура проекта 
 
@@ -64,6 +101,6 @@ admission-data-api/
     │
     └── scrapers/          # СЛОЙ ПАРСИНГА (Добыча данных)
         ├── __init__.py
-        └── spbpu.py       # Код парсера Политеха (перенесем логику из test.py)
+        └── spbstu.py       # Код парсера Политеха (перенесем логику из test.py)
 
 
