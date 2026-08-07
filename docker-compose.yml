@@ -1,4 +1,13 @@
 services:
+  db: 
+    image: postgres:17
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+
   api:
     build: .
     container_name: admission-data-api
@@ -10,10 +19,12 @@ services:
       - PYTHONUNBUFFERED=1
       - LOG_TO_FILE=true
       - LOG_DIR=/app/logs
+      - DATABASE_HOST=db
     volumes:
       - ./src:/app/src:ro
       - ./logs:/app/logs
       - ./pyproject.toml:/app/pyproject.toml:ro
     restart: unless-stopped
-
+    depends_on:
+      - db
     
