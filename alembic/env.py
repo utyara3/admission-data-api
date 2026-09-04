@@ -1,7 +1,7 @@
 import asyncio
 import sys
-from pathlib import Path
 from logging.config import fileConfig
+from pathlib import Path
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
@@ -12,8 +12,8 @@ from alembic import context
 # Добавляем путь к папке с исходным кодом в пути для импорта
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.core.database import Base
 from src.core.config import settings
+from src.core.database import Base
 from src.models import *
 
 config = context.config
