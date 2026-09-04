@@ -17,7 +17,6 @@ class Applicant(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     applicant_id: Mapped[str] = mapped_column(String(20), unique=True)
     sum_of_scores: Mapped[int] = mapped_column()
-    score_for_ia: Mapped[int] = mapped_column()  # ia - individual achievements
     score_for_exams: Mapped[dict[ExamSubject, int]] = mapped_column(JSONB)
 
     applications: Mapped[list["Application"]] = relationship(
