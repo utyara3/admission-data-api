@@ -1,6 +1,6 @@
 import importlib
 from pathlib import Path
-from typing import Type
+from types import ModuleType
 
 from src.core.logger_config import setup_logger
 
@@ -14,7 +14,7 @@ class ScraperRegistry:
 
     def __init__(self):
         self._scrapers: dict[str, type[BaseScraper]] = {}
-        self._configs: dict[str, object] = {}
+        self._configs: dict[str, ModuleType] = {}
         self._load_all_scrappers()
 
     def _load_all_scrappers(self):

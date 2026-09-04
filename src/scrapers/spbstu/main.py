@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from playwright.async_api import async_playwright
 
 from src.core.logger_config import setup_logger
@@ -17,8 +19,12 @@ logger = setup_logger(__name__)
 class SPBSTUScraper(BaseScraper):
     university_id = config.university_id
 
-    SELECTOR_EDUCATION_FORMS_IDS = {"distance": "1", "full_time": "2", "part_time": "3"}
-    SELECTOR_FUNDING_TYPE_IDS = {
+    SELECTOR_EDUCATION_FORMS_IDS: ClassVar[dict[str, str]] = {
+        "distance": "1",
+        "full_time": "2",
+        "part_time": "3",
+    }
+    SELECTOR_FUNDING_TYPE_IDS: ClassVar[dict[str, str]] = {
         "budget": "1",
         "paid": "2",
         "commercial": "3",
@@ -175,10 +181,8 @@ class SPBSTUScraper(BaseScraper):
                 position=raw_applicant["num"],
                 applicant_id=raw_applicant["code"],
                 priority=raw_applicant["priority"],
-                has_original=True if raw_applicant["approval"] == "+" else False,
-                is_bvi=True
-                if "Без вступительных испытаний" in raw_applicant["base"]
-                else False,
+                has_original=raw_applicant["approval"] == "+",
+                is_bvi="Без вступительных испытаний" in raw_applicant["base"],
                 total_score=total_score,
                 ia_score=ia_score,
                 exam_scores=exam_scores,

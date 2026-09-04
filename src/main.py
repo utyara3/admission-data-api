@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from typing import Annotated
 
 from fastapi import Depends, FastAPI
 from sqlalchemy import text
@@ -26,7 +27,7 @@ async def root():
 
 
 @app.get("/health")
-async def health(db: AsyncSession = Depends(get_db)):
+async def health(db: Annotated[AsyncSession, Depends(get_db)]):
     res = await db.execute(text("SELECT 1"))
 
     return {"status": "healthy", "database": "connected", "result": res.scalar()}

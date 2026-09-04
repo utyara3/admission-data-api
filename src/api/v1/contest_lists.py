@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.schemas.contest import ContestListResponse, ContestQueryParams
@@ -17,7 +19,7 @@ async def get_available_universities() -> list[dict]:
     tags=["Contest Lists"],
 )
 async def get_contest_lists(
-    query_data: ContestQueryParams = Depends(),
+    query_data: Annotated[ContestQueryParams, Depends()],
 ) -> ContestListResponse:
     try:
         scraper = registry.get_scraper(query_data.university)
@@ -31,7 +33,7 @@ async def get_contest_lists(
         return res
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
+    except Exception as e:  # noqa BLEE001
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Ошибка парсинга: {e!s}",
