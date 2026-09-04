@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-
-from typing import Any, Optional
+from typing import Any
 
 from src.schemas.contest import ContestListResponse
 
@@ -16,7 +15,7 @@ class BaseScraper(ABC):
         education_degree: str,
         direction_code: str,
         education_form: str,
-        profile: Optional[str],
+        profile: str | None,
         funding_type: str,
         **kwargs: Any,
     ) -> ContestListResponse:
@@ -34,7 +33,6 @@ class BaseScraper(ABC):
         Returns:
             ContestListResponse: Стандартизированные данные
         """
-        pass
 
     # @abstractmethod
     # async def get_available_directions(self) -> list[dict]:

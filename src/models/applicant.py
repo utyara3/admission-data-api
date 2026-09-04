@@ -1,8 +1,8 @@
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import JSONB
-
 from typing import TYPE_CHECKING
+
+from sqlalchemy import String
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.database import Base
 from src.core.enums import ExamSubject

@@ -1,8 +1,7 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
 from functools import lru_cache
-
 from pathlib import Path
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -23,7 +22,7 @@ class Settings(BaseSettings):
     )
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> Settings:
     return Settings()
 

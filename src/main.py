@@ -1,13 +1,12 @@
-from fastapi import Depends, FastAPI
+from contextlib import asynccontextmanager
 
+from fastapi import Depends, FastAPI
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from contextlib import asynccontextmanager
-
 from src.api.v1.contest_lists import router as university_router
-from src.core.logger_config import setup_logger
 from src.core.database import get_db
+from src.core.logger_config import setup_logger
 
 
 @asynccontextmanager

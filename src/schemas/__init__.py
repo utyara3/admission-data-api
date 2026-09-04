@@ -1,13 +1,12 @@
-from .university import UniversitySchema
 from .applicant import ApplicantSchema
-from .direction import DirectionSchema
 from .contest import ContestListResponse, ContestQueryParams
-
+from .direction import DirectionSchema
+from .university import UniversitySchema
 
 __all__ = [
-    "UniversitySchema",
     "ApplicantSchema",
-    "DirectionSchema",
     "ContestListResponse",
     "ContestQueryParams",
+    "DirectionSchema",
+    "UniversitySchema",
 ]

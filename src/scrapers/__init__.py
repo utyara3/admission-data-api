@@ -1,9 +1,9 @@
 import importlib
-
-from typing import Type
 from pathlib import Path
+from typing import Type
 
 from src.core.logger_config import setup_logger
+
 from .base_scraper import BaseScraper
 
 logger = setup_logger(__name__)
@@ -13,7 +13,7 @@ class ScraperRegistry:
     """Динамический реестр всех доступных скраперов"""
 
     def __init__(self):
-        self._scrapers: dict[str, Type[BaseScraper]] = {}
+        self._scrapers: dict[str, type[BaseScraper]] = {}
         self._configs: dict[str, object] = {}
         self._load_all_scrappers()
 

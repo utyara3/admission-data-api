@@ -1,14 +1,14 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from typing import TYPE_CHECKING
 
 from src.core.database import Base
 from src.core.enums import ApplicantContestStatus
 
 if TYPE_CHECKING:
-    from src.models.direction import Direction
     from src.models.applicant import Applicant
+    from src.models.direction import Direction
     from src.models.snapshot import Snapshot
 
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.scrapers import registry
 from src.schemas.contest import ContestListResponse, ContestQueryParams
+from src.scrapers import registry
 
 router = APIRouter()
 
@@ -34,5 +34,5 @@ async def get_contest_lists(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Ошибка парсинга: {str(e)}",
+            detail=f"Ошибка парсинга: {e!s}",
         )

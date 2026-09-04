@@ -1,16 +1,15 @@
-from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from datetime import datetime, UTC
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.database import Base
 from src.core.enums import EducationDegree, EducationForm, FundingType
 
 if TYPE_CHECKING:
-    from src.models.university import University
     from src.models.application import Application
+    from src.models.university import University
 
 
 class Direction(Base):

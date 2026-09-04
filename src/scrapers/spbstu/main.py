@@ -1,13 +1,14 @@
 from playwright.async_api import async_playwright
 
+from src.core.logger_config import setup_logger
 from src.schemas import (
     ApplicantSchema,
-    UniversitySchema,
-    DirectionSchema,
     ContestListResponse,
+    DirectionSchema,
+    UniversitySchema,
 )
 from src.scrapers.base_scraper import BaseScraper
-from src.core.logger_config import setup_logger
+
 from .config import config
 
 logger = setup_logger(__name__)
@@ -132,7 +133,7 @@ class SPBSTUScraper(BaseScraper):
                 return ret_data
 
             except Exception as e:
-                logger.error(f"Ошибка при парсинге: {str(e)}")
+                logger.error(f"Ошибка при парсинге: {e!s}")
                 raise
 
             finally:

@@ -1,11 +1,10 @@
 from pydantic import BaseModel, Field
 
-
-from .university import UniversitySchema
-from .direction import DirectionSchema
-from .applicant import ApplicantSchema
-
 from src.core.enums import EducationDegree, EducationForm, FundingType
+
+from .applicant import ApplicantSchema
+from .direction import DirectionSchema
+from .university import UniversitySchema
 
 
 class ContestQueryParams(BaseModel):
