@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from src.core.enums import EducationForm, FundingType
+from src.core.enums import EducationDegree, EducationForm, FundingType
 
 
 class DirectionSchema(BaseModel):
@@ -13,4 +13,8 @@ class DirectionSchema(BaseModel):
     )
     funding_type: FundingType = Field(
         ..., description="Тип финансирования (e.g. Бюджет)"
+    )
+    education_degree: EducationDegree = Field(
+        default=EducationDegree.BACHELOR,
+        description="Уровень обучения (e.g. bachelor)",
     )
