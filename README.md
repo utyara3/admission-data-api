@@ -10,8 +10,8 @@ API для агрегации конкурсных списков российс
 
 ```
 ┌─────────┐     ┌──────────┐     ┌────────────┐
-│  Client │────▶│   API    │────▶│   Cache    │  Redis
-│         │◀────│ (FastAPI)│◀────│  (hit?)    │
+│ Client  │────▶│   API    │────▶│   Cache    │  Redis
+│         │◀────│(FastAPI) │◀────│   (hit?)   │
 └─────────┘     └────┬─────┘     └────────────┘
                      │ miss
                      ▼
@@ -23,8 +23,8 @@ API для агрегации конкурсных списков российс
               ┌──────┴──────┐
               ▼              ▼
         ┌──────────┐  ┌──────────┐
-        │   Repo   │  │  Celery   │  background
-        │   (DB)   │  │  Worker   │  ──▶ Scraper ──▶ Save
+        │   Repo   │  │  Celery  │  background
+        │   (DB)   │  │  Worker  │  ──▶ Scraper ──▶ Save
         └────┬─────┘  └──────────┘
              ▼
         PostgreSQL
