@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String
@@ -25,7 +25,9 @@ class Direction(Base):
     profile: Mapped[str | None] = mapped_column(String(100), default=None)
     education_form: Mapped[EducationForm] = mapped_column()
     funding_type: Mapped[FundingType] = mapped_column()
-    updated_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
+    updated_at: Mapped[datetime] = mapped_column(
+        default=datetime.utcnow,
+    )
 
     university: Mapped["University"] = relationship(
         "University", back_populates="directions"

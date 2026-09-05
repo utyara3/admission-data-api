@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey
@@ -17,7 +17,9 @@ class Snapshot(Base):
     direction_id: Mapped[int] = mapped_column(
         ForeignKey("directions.id", ondelete="CASCADE")
     )
-    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(
+        default=datetime.utcnow,
+    )
 
     applications: Mapped[list["Application"]] = relationship(
         "Application", back_populates="snapshot"

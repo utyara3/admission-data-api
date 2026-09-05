@@ -29,7 +29,7 @@ class FundingType(str, Enum):
     TARGET = "target"  # целевое
 
 
-class ApplicantContestStatus(Enum):
+class ApplicantContestStatus(str, Enum):
     """Статусы абитуриента, отображаемые в конкурсных и рейтинговых списках вузов"""
 
     # Активное участие в конкурсе
