@@ -5,3 +5,5 @@ docker_error.log
 __pycache__/
 *.pyc
 logs/
+dcu.log
+AGENTS.md
