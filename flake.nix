@@ -20,6 +20,12 @@
         sqlalchemy
         asyncpg
         alembic
+        redis
+        hiredis
+        celery
+        pytest
+        pytest-asyncio
+        fakeredis
       ]);
     in
     {

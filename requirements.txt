@@ -8,3 +8,10 @@ pydantic-settings
 sqlalchemy
 asyncpg
 alembic
+redis[async]
+celery[redis]
+
+# testing
+pytest
+pytest-asyncio
+fakeredis[aioredis]
