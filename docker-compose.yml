@@ -1,5 +1,5 @@
 services:
-  db: 
+  db:
     image: postgres:17
     ports:
       - "5432:5432"
@@ -7,6 +7,21 @@ services:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=${DATABASE_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   api:
     build: .
@@ -20,11 +35,58 @@ services:
       - LOG_TO_FILE=true
       - LOG_DIR=/app/logs
       - DATABASE_HOST=db
+      - REDIS_HOST=redis
     volumes:
       - ./src:/app/src:ro
       - ./logs:/app/logs
       - ./pyproject.toml:/app/pyproject.toml:ro
     restart: unless-stopped
     depends_on:
-      - db
-    
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery-worker:
+    build: .
+    container_name: admission-celery-worker
+    entrypoint: []
+    command: celery -A src.tasks worker --loglevel=info --concurrency=2
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_HOST=db
+      - REDIS_HOST=redis
+    volumes:
+      - ./src:/app/src:ro
+      - ./logs:/app/logs
+      - ./pyproject.toml:/app/pyproject.toml:ro
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery-beat:
+    build: .
+    container_name: admission-celery-beat
+    entrypoint: []
+    command: celery -A src.tasks beat --loglevel=info
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_HOST=db
+      - REDIS_HOST=redis
+    volumes:
+      - ./src:/app/src:ro
+      - ./logs:/app/logs
+      - ./pyproject.toml:/app/pyproject.toml:ro
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy

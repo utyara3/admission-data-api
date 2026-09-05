@@ -8,12 +8,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.api.v1.contest_lists import router as university_router
 from src.core.database import get_db
 from src.core.logger_config import setup_logger
+from src.core.redis_client import close_redis, init_redis
 
 
 @asynccontextmanager
 async def lifespan(app):
+    await init_redis()
     setup_logger("main")
     yield
+    await close_redis()
 
 
 app = FastAPI(lifespan=lifespan)
