@@ -125,41 +125,140 @@ src/
 
 ## Добавить свой скрапер
 
-1. Создай папку `src/scrapers/<university_id>/`
-2. Добавь `config.py`:
+### 1. Создай папку
+
+```
+src/scrapers/my_university/
+├── __init__.py
+├── config.py
+└── main.py
+```
+
+### 2. `config.py` — метаданные вуза
+
 ```python
 from src.scrapers.base_config import ScraperConfig
 
 config = ScraperConfig(
-    university_id="my_university",
-    university_name="Мой Вуз",
-    university_short_name="МВ",
-    website_url="https://example.com",
+    university_id="my_university",           # уникальный ID (латиница, используется в URL)
+    university_name="Мой Университет",       # полное название
+    university_short_name="МУ",              # короткое название
+    website_url="https://myuni.ru",          # сайт вуза
+    description="Описание для /universities",
 )
 ```
-3. Добавь `main.py`:
+
+### 3. `main.py` — логика парсинга
+
 ```python
+from src.core.enums import EducationDegree, EducationForm, FundingType
+from src.schemas import (
+    ApplicantSchema,
+    ContestListResponse,
+    DirectionSchema,
+    UniversitySchema,
+)
 from src.scrapers.base_scraper import BaseScraper
-from src.schemas.contest import ContestListResponse
+
+from .config import config
 
 
 class MyUniversityScraper(BaseScraper):
-    university_id = "my_university"
+    university_id = config.university_id
 
     async def scrape(
         self,
-        education_degree,
-        direction_code,
-        profile,
-        education_form,
-        funding_type,
+        education_degree: EducationDegree,
+        direction_code: str,
+        profile: str | None,
+        education_form: EducationForm,
+        funding_type: FundingType,
         **kwargs,
     ) -> ContestListResponse:
-        # твой парсинг
-        ...
+        # --- Твой парсинг ---
+        # Например, через httpx + BeautifulSoup или Playwright:
+        #
+        # async with httpx.AsyncClient() as client:
+        #     html = await client.get(f"https://myuni.ru/contest/{direction_code}")
+        # soup = BeautifulSoup(html.text, "html.parser")
+        #
+        # applicants = []
+        # for row in soup.select("table.contest tr")[1:]:
+        #     cells = row.find_all("td")
+        #     applicants.append(ApplicantSchema(
+        #         position=int(cells[0].text),
+        #         applicant_id=int(cells[1].text),
+        #         priority=int(cells[2].text),
+        #         has_original=cells[3].text == "Да",
+        #         is_bvi=False,
+        #         total_score=int(cells[4].text),
+        #         ia_score=int(cells[5].text),
+        #         exam_scores={"rus": 80, "math_prof": 70, "it": 90},
+        #         status="Участвует в конкурсе",
+        #     ))
+        #
+        # return ContestListResponse(...)
+
+        # Заглушка (удали и замени на реальный парсинг):
+        return ContestListResponse(
+            university=UniversitySchema(
+                id=config.university_id,
+                full_name=config.university_name,
+                short_name=config.university_short_name,
+            ),
+            direction=DirectionSchema(
+                code=direction_code,
+                profile=profile,
+                education_form=education_form,
+                funding_type=funding_type,
+                education_degree=education_degree,
+            ),
+            applicant=[],
+        )
 ```
 
-Реестр подхватит скрапер автоматически.
+### 4. Что должен вернуть `scrape()`
+
+Метод возвращает `ContestListResponse` — единый формат для всех вузов:
+
+```
+ContestListResponse
+├── university: UniversitySchema      # id, full_name, short_name
+├── direction: DirectionSchema        # code, profile, education_form, funding_type, education_degree
+└── applicant: list[ApplicantSchema]  # каждый абитуриент
+    ├── position          # позиция в конкурсном списке
+    ├── applicant_id      # уникальный ID абитуриента (внутренний ID вуза)
+    ├── priority          # приоритет направления (1, 2, 3...)
+    ├── has_original      # подан ли оригинал аттестата
+    ├── is_bvi            # поступает ли без вступительных
+    ├── total_score       # суммарный балл
+    ├── ia_score          # баллы за индивидуальные достижения
+    ├── exam_scores       # баллы по предметам: {"rus": 91, "math_prof": 86, "it": 90}
+    └── status            # "Участвует в конкурсе", "Передано в вуз", ...
+```
+
+### 5. Именование
+
+Класс скрапера **должен** заканчиваться на `Scraper` и наследовать `BaseScraper`:
+
+```python
+class MyUniversityScraper(BaseScraper):  # ✅ правильно
+class MyUniversity(BaseScraper):         # ❌ не будет найден
+```
+
+### 6. Тестирование
+
+```bash
+# проверь что скрапер загрузился
+curl http://localhost:8000/universities | jq '.[].id'
+
+# запроси данные
+curl "http://localhost:8000/contest-lists?university=my_university&education_degree=bachelor&code=09.03.04&education_form=full_time&funding_type=budget"
+```
+
+### Полный пример: mock-скрапер
+
+Готовый рабочий пример — `src/scrapers/mock/`. Генерирует случайные данные, полезен для разработки без реальных HTTP-запросов.
 
 ## Запуск
 
