@@ -2,6 +2,7 @@ from typing import ClassVar
 
 from playwright.async_api import async_playwright
 
+from src.core.enums import EducationDegree, EducationForm, FundingType
 from src.core.logger_config import setup_logger
 from src.schemas import (
     ApplicantSchema,
@@ -35,19 +36,17 @@ class SPBSTUScraper(BaseScraper):
 
     async def scrape(
         self,
-        education_degree: str,
+        education_degree: EducationDegree,
         direction_code: str,
         profile: str | None,
-        education_form: str,
-        funding_type: str,
+        education_form: EducationForm,
+        funding_type: FundingType,
         **kwargs,
     ) -> ContestListResponse:
-        direction_code = direction_code.lower()
-        education_form = education_form.lower()
-        funding_type = funding_type.lower()
 
-        if education_degree == "specialist":
-            education_degree = "bachelor"
+        degree_for_scraping = education_degree
+        if education_degree == EducationDegree.SPECIALIST:
+            degree_for_scraping = EducationDegree.BACHELOR
 
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
@@ -60,7 +59,7 @@ class SPBSTUScraper(BaseScraper):
             try:
                 logger.info("Загружаем страницу политеха")
                 await page.goto(
-                    f"https://my.spbstu.ru/home/abit/list-applicants/{education_degree}",
+                    f"https://my.spbstu.ru/home/abit/list-applicants/{degree_for_scraping}",
                     timeout=30000,
                 )
                 await page.wait_for_load_state("networkidle")
@@ -133,7 +132,12 @@ class SPBSTUScraper(BaseScraper):
                 raw_json = await response.json()
 
                 ret_data = self._validate_raw_json(
-                    raw_json, direction_code, profile, education_form, funding_type
+                    raw_json,
+                    direction_code,
+                    profile,
+                    education_form,
+                    funding_type,
+                    education_degree,
                 )
 
                 return ret_data
@@ -151,8 +155,9 @@ class SPBSTUScraper(BaseScraper):
         raw_json: dict,
         code: str,
         profile: str | None,
-        education_form: str,
-        funding_type: str,
+        education_form: EducationForm,
+        funding_type: FundingType,
+        education_degree: EducationDegree = EducationDegree.BACHELOR,
     ) -> ContestListResponse:
         applicants = []
         results = raw_json.get("results")
@@ -200,8 +205,9 @@ class SPBSTUScraper(BaseScraper):
             direction=DirectionSchema(
                 code=code,
                 profile=profile,
-                education_form=education_form,  # pyright: ignore
-                funding_type=funding_type,  # pyright: ignore
+                education_form=education_form,
+                funding_type=funding_type,
+                education_degree=education_degree,
             ),
             applicant=applicants,
         )
